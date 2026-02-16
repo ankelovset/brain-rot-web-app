@@ -8,7 +8,7 @@ interface DemographicsStepProps {
     gender: string;
     education: string;
     isNativeEnglish: string;
-    englishLevel: number | null;
+    englishLevel: string;
     socialMediaFrequency: string;
     gameplayFamiliarity: string;
   };
@@ -75,7 +75,21 @@ export default function DemographicsStep({
         required
       />
 
-      <ScaleInput
+      <SelectInput
+        id="englishLevel"
+        label="How would you rate your English level?"
+        value={data.englishLevel}
+        onChange={(value) => onChange("englishLevel", value)}
+        options={[
+          { value: "beginner", label: "Beginner" },
+          { value: "elementary", label: "Elementary" },
+          { value: "intermediate", label: "Intermediate" },
+          { value: "advanced", label: "Advanced" },
+          { value: "native-like", label: "Native-like" },
+        ]}
+        required
+      />
+      {/* <SelectInput
         id="englishLevel"
         label="How would you rate your English level?"
         value={data.englishLevel}
@@ -87,7 +101,7 @@ export default function DemographicsStep({
           5: "Advanced",
         }}
         required
-      />
+      /> */}
 
       <SelectInput
         id="socialMediaFrequency"

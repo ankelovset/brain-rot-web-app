@@ -16,7 +16,7 @@ interface SurveyData {
     gender: string;
     education: string;
     isNativeEnglish: string;
-    englishLevel: number | null;
+    englishLevel: string;
     socialMediaFrequency: string;
     gameplayFamiliarity: string;
   };
@@ -114,7 +114,7 @@ export default function Page() {
       gender: "",
       education: "",
       isNativeEnglish: "",
-      englishLevel: null,
+      englishLevel: "",
       socialMediaFrequency: "",
       gameplayFamiliarity: "",
     },
@@ -181,7 +181,7 @@ export default function Page() {
           surveyData.demographics.gender !== "" &&
           surveyData.demographics.education !== "" &&
           surveyData.demographics.isNativeEnglish !== "" &&
-          surveyData.demographics.englishLevel !== null &&
+          surveyData.demographics.englishLevel !== "" &&
           surveyData.demographics.socialMediaFrequency !== "" &&
           surveyData.demographics.gameplayFamiliarity !== ""
         );
