@@ -54,10 +54,10 @@ export default function MultipleChoiceStep({
         value={data.researchRoom}
         onChange={(value) => onChange("researchRoom", value)}
         options={[
-          { value: "271", label: "271" },
-          { value: "278", label: "278" },
-          { value: "276", label: "276" },
-          { value: "279", label: "279" },
+          { value: "217", label: "217" },
+          { value: "218", label: "218" },
+          { value: "216", label: "216" },
+          { value: "219", label: "219" },
         ]}
         required
       />

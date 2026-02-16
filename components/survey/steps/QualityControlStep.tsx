@@ -18,6 +18,7 @@ export default function QualityControlStep({
 }: QualityControlStepProps) {
   return (
     <div className="w-full max-w-md space-y-6">
+      <p>haha</p>
       <RadioGroup
         id="attentionCheck"
         label="To show you are paying attention, please select 'Option 3' for this statement."

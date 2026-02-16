@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import DemographicsStep from "@/components/survey/steps/DemographicsStep";
 import VideoStep from "@/components/survey/steps/VideoStep";
 import FreeRecallStep from "@/components/survey/steps/FreeRecallStep";
 import MultipleChoiceStep from "@/components/survey/steps/MultipleChoiceStep";
 import LikertStep from "@/components/survey/steps/LikertStep";
 import QualityControlStep from "@/components/survey/steps/QualityControlStep";
+import SurveyHeader from "@/components/SurveyHeader";
 
 interface SurveyData {
   demographics: {
@@ -66,6 +68,7 @@ interface SurveyData {
 const TOTAL_STEPS = 9;
 
 export default function Page() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
@@ -245,6 +248,9 @@ export default function Page() {
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+    } else {
+      // Navigate to home page if on first step
+      router.push("/");
     }
   };
 
@@ -495,7 +501,7 @@ export default function Page() {
             }
           />
         );
-      case 7:
+      case 8:
         return (
           <QualityControlStep
             data={surveyData.qualityControl}
@@ -511,43 +517,28 @@ export default function Page() {
 
   if (submitStatus === "success") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-        <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-32 px-16 bg-white dark:bg-black sm:items-start">
-          <div className="flex flex-col items-center gap-8 text-center sm:items-start sm:text-left w-full">
-            <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-              Thank You!
-            </h1>
-            <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-              Your survey has been submitted successfully. We appreciate your participation!
-            </p>
-          </div>
-        </main>
+      <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="flex flex-col items-center gap-8 text-center sm:items-start sm:text-left w-full">
+          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+            Thank You!
+          </h1>
+          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+            Your survey has been submitted successfully. We appreciate your participation!
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex flex-col items-center gap-8 text-center sm:items-start sm:text-left w-full">
-          <div className="w-full max-w-md">
-            <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50 mb-2">
-              Survey
-            </h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
-              Step {currentStep + 1} of {TOTAL_STEPS}: {stepTitles[currentStep]}
-            </p>
-
-            {/* Progress Bar */}
-            <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 mb-8">
-              <div
-                className="bg-black dark:bg-zinc-50 h-2 rounded-full transition-all duration-300"
-                style={{
-                  width: `${((currentStep + 1) / TOTAL_STEPS) * 100}%`,
-                }}
-              />
-            </div>
-          </div>
+    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <SurveyHeader 
+        currentStep={currentStep}
+        totalSteps={TOTAL_STEPS}
+        stepTitle={stepTitles[currentStep]}
+      />
+      
+      <div className="flex flex-col items-center gap-8 text-center sm:items-start sm:text-left w-full">
 
           <form
             onSubmit={(e) => {
@@ -572,8 +563,7 @@ export default function Page() {
               <button
                 type="button"
                 onClick={handleBack}
-                disabled={currentStep === 0}
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-zinc-300 bg-white px-5 text-black transition-colors hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-zinc-300 bg-white px-5 text-black transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800"
               >
                 Back
               </button>
@@ -597,7 +587,6 @@ export default function Page() {
             </div>
           </form>
         </div>
-      </main>
     </div>
   );
 }
