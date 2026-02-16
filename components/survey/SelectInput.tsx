@@ -31,7 +31,7 @@ export default function SelectInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
-        className="h-12 w-full rounded-full border border-zinc-300 bg-white px-5 text-black focus:border-black focus:outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-50 dark:focus:ring-zinc-50"
+        className="h-12 w-full rounded-full border border-zinc-300 bg-white pl-5 pr-10 text-black focus:border-black focus:outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-50 dark:focus:ring-zinc-50"
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
