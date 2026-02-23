@@ -105,7 +105,7 @@ export default function DemographicsStep({
 
       <SelectInput
         id="socialMediaFrequency"
-        label="How often do you use social media (TikTok, Instagram Reels or similar)?"
+        label="How often do you use short-video social media (e.g., TikTok, Instagram Reels, YouTube Shorts)?"
         value={data.socialMediaFrequency}
         onChange={(value) => onChange("socialMediaFrequency", value)}
         options={[

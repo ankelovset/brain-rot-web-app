@@ -55,9 +55,9 @@ export default function MultipleChoiceStep({
         onChange={(value) => onChange("researchRoom", value)}
         options={[
           { value: "217", label: "217" },
-          { value: "218", label: "218" },
-          { value: "216", label: "216" },
-          { value: "219", label: "219" },
+          { value: "312", label: "312" },
+          { value: "930", label: "930" },
+          { value: "847", label: "847" },
         ]}
         required
       />
@@ -82,10 +82,10 @@ export default function MultipleChoiceStep({
         value={data.lauraRoom}
         onChange={(value) => onChange("lauraRoom", value)}
         options={[
+          { value: "217", label: "217" },
           { value: "312", label: "312" },
-          { value: "313", label: "313" },
-          { value: "311", label: "311" },
-          { value: "314", label: "314" },
+          { value: "930", label: "930" },
+          { value: "847", label: "847" },
         ]}
         required
       />
