@@ -53,16 +53,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate free recall
-    if (
-      !freeRecall.everythingRemembered ||
-      !Array.isArray(freeRecall.specificDetails) ||
-      freeRecall.specificDetails.length === 0
-    ) {
-      return NextResponse.json(
-        { error: 'Missing required free recall fields' },
-        { status: 400 }
-      );
-    }
+    // if (
+    //   !freeRecall.everythingRemembered ||
+    //   !Array.isArray(freeRecall.specificDetails) ||
+    //   freeRecall.specificDetails.length === 0
+    // ) {
+    //   return NextResponse.json(
+    //     { error: 'Missing required free recall fields' },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Validate multiple choice
     if (
