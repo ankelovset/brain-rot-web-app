@@ -189,8 +189,7 @@ export default function Page() {
         return videoWatched;
       case 2: // Free Recall
         return (
-          surveyData.freeRecall.everythingRemembered.trim() !== "" &&
-          surveyData.freeRecall.specificDetails[0]?.trim() !== ""
+          surveyData.freeRecall.everythingRemembered.trim() !== ""
         );
       case 3: // Multiple Choice
         return (
