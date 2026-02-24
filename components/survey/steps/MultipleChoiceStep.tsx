@@ -78,7 +78,7 @@ export default function MultipleChoiceStep({
 
       <RadioGroup
         id="lauraRoom"
-        label="Which room did Laura go to?"
+        label="Which room number did Laura mistakenly go to?"
         value={data.lauraRoom}
         onChange={(value) => onChange("lauraRoom", value)}
         options={[

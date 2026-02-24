@@ -81,18 +81,22 @@ export default function Page() {
   const [videoWatched, setVideoWatched] = useState(false);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
 
+  const isNoVideoCondition = selectedVideo === "01-no-video.mp4";
+  const totalSteps = isNoVideoCondition ? 8 : TOTAL_STEPS;
+  const contentStep = isNoVideoCondition && currentStep >= 5 ? currentStep + 1 : currentStep;
+
   // Debug: skip steps from browser console (e.g. __surveyDebug.goToStep(3) or __surveyDebug.next())
   useEffect(() => {
     (window as unknown as { __surveyDebug?: object }).__surveyDebug = {
-      goToStep: (n: number) => setCurrentStep(Math.max(0, Math.min(n, TOTAL_STEPS - 1))),
-      next: () => setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1)),
+      goToStep: (n: number) => setCurrentStep(Math.max(0, Math.min(n, totalSteps - 1))),
+      next: () => setCurrentStep((s) => Math.min(s + 1, totalSteps - 1)),
       markVideoWatched: () => setVideoWatched(true),
-      totalSteps: TOTAL_STEPS,
+      totalSteps,
     };
     return () => {
       delete (window as unknown as { __surveyDebug?: object }).__surveyDebug;
     };
-  }, []);
+  }, [totalSteps]);
 
   // Capture start time and load available videos when component mounts
   useEffect(() => {
@@ -107,6 +111,7 @@ export default function Page() {
           const chosen = videos[Math.floor(Math.random() * videos.length)];
           setSelectedVideo(chosen);
           updateSurveyData("video", "filename", chosen);
+          console.log("[Survey debug] Video shown in Step 1:", chosen);
         }
       } catch (error) {
         console.error("Error loading videos:", error);
@@ -232,7 +237,8 @@ export default function Page() {
           surveyData.cognitiveLoad.mentallyDemanding !== null &&
           surveyData.cognitiveLoad.easyToFollow !== null
         );
-      case 5: // Distraction
+      case 5: // Distraction (skipped for no-video condition)
+        if (isNoVideoCondition) return true;
         return (
           surveyData.distraction.visualsDistracted !== null &&
           surveyData.distraction.attentionSplit !== null &&
@@ -266,7 +272,7 @@ export default function Page() {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep) && currentStep < TOTAL_STEPS - 1) {
+    if (validateStep(contentStep) && currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -281,7 +287,7 @@ export default function Page() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(currentStep)) {
+    if (!validateStep(contentStep)) {
       return;
     }
 
@@ -356,24 +362,35 @@ export default function Page() {
     }
   };
 
-  const stepTitles = [
-    "Demographics",
-    "Video",
-    "Free Recall",
-    "Multiple Choice",
-    "Cognitive Load",
-    "Distraction",
-    "Engagement",
-    "Manipulation Check",
-    "Quality Control",
-  ];
+  const stepTitles = isNoVideoCondition
+    ? [
+        "Demographics",
+        "Video",
+        "Free Recall",
+        "Multiple Choice",
+        "Cognitive Load",
+        "Engagement",
+        "Manipulation Check",
+        "Quality Control",
+      ]
+    : [
+        "Demographics",
+        "Video",
+        "Free Recall",
+        "Multiple Choice",
+        "Cognitive Load",
+        "Distraction",
+        "Engagement",
+        "Manipulation Check",
+        "Quality Control",
+      ];
 
   const handleVideoEnded = () => {
     setVideoWatched(true);
   };
 
   const renderStep = () => {
-    switch (currentStep) {
+    switch (contentStep) {
       case 0:
         return (
           <DemographicsStep
@@ -569,7 +586,7 @@ export default function Page() {
     <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <SurveyHeader 
         currentStep={currentStep}
-        totalSteps={TOTAL_STEPS}
+        totalSteps={totalSteps}
         stepTitle={stepTitles[currentStep]}
       />
       
@@ -578,7 +595,7 @@ export default function Page() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (currentStep === TOTAL_STEPS - 1) {
+              if (currentStep === totalSteps - 1) {
                 handleSubmit();
               } else {
                 handleNext();
@@ -602,10 +619,10 @@ export default function Page() {
               >
                 Back
               </button>
-              {currentStep < TOTAL_STEPS - 1 ? (
+              {currentStep < totalSteps - 1 ? (
                 <button
                   type="submit"
-                  disabled={!validateStep(currentStep)}
+                  disabled={!validateStep(contentStep)}
                   className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
@@ -613,7 +630,7 @@ export default function Page() {
               ) : (
                 <button
                   type="submit"
-                  disabled={!validateStep(currentStep) || isSubmitting}
+                  disabled={!validateStep(contentStep) || isSubmitting}
                   className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Submitting..." : "Submit"}

@@ -89,19 +89,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate distraction
-    if (
-      distraction.visualsDistracted === null ||
-      distraction.attentionSplit === null ||
-      distraction.lookingAtBackground === null ||
-      distraction.ableToIgnore === null
-    ) {
-      return NextResponse.json(
-        { error: 'Missing required distraction fields' },
-        { status: 400 }
-      );
-    }
-
     // Validate engagement
     if (
       engagement.videoEngaging === null ||
@@ -112,6 +99,22 @@ export async function POST(request: NextRequest) {
         { error: 'Missing required engagement fields' },
         { status: 400 }
       );
+    }
+
+    // Validate distraction (skip when no-background video — step not shown)
+    const isNoVideoCondition = video?.filename === "01-no-video.mp4";
+    if (!isNoVideoCondition) {
+      if (
+        distraction.visualsDistracted === null ||
+        distraction.attentionSplit === null ||
+        distraction.lookingAtBackground === null ||
+        distraction.ableToIgnore === null
+      ) {
+        return NextResponse.json(
+          { error: 'Missing required distraction fields' },
+          { status: 400 }
+        );
+      }
     }
 
     // Validate manipulation check
@@ -126,7 +129,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate quality control (require backgroundVisuals only when that question was shown — i.e. when video has visuals, not 01-no-video)
-    const isNoVideoCondition = video?.filename === "01-no-video.mp4";
     if (
       !qualityControl.attentionCheck ||
       qualityControl.attentionPaid === null ||
