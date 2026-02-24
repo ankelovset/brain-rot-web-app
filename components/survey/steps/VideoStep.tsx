@@ -1,21 +1,50 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 interface VideoStepProps {
   videoPath: string;
   videoFilename: string;
   onVideoEnded: () => void;
+  /** Cumulative seconds the video has been playing (from previous visits to this step) */
+  initialTimeSpentSeconds?: number;
+  /** Number of times the user has completed a viewing (reached end or 90%), including replays */
+  initialWatchCount?: number;
+  /** Called when time spent or watch count changes (so parent can persist when user goes back/next) */
+  onVideoProgress?: (data: { timeSpentSeconds: number; watchCount: number }) => void;
 }
 
 export default function VideoStep({
   videoPath,
   videoFilename,
   onVideoEnded,
+  initialTimeSpentSeconds = 0,
+  initialWatchCount = 0,
+  onVideoProgress,
 }: VideoStepProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasCalledOnEndedRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
+  const [timeSpentSeconds, setTimeSpentSeconds] = useState(initialTimeSpentSeconds);
+  const [watchCount, setWatchCount] = useState(initialWatchCount);
+  const playIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const onVideoProgressRef = useRef(onVideoProgress);
+  onVideoProgressRef.current = onVideoProgress;
+
+  // Notify parent when time or watch count changes (omit onVideoProgress from deps to avoid infinite loop)
+  useEffect(() => {
+    onVideoProgressRef.current?.({ timeSpentSeconds, watchCount });
+  }, [timeSpentSeconds, watchCount]);
+
+  // Clear play interval on unmount
+  useEffect(() => {
+    return () => {
+      if (playIntervalRef.current) {
+        clearInterval(playIntervalRef.current);
+        playIntervalRef.current = null;
+      }
+    };
+  }, []);
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     const video = e.currentTarget;
@@ -45,18 +74,36 @@ export default function VideoStep({
   };
 
   const handleVideoEnded = () => {
+    setWatchCount((c) => c + 1);
     if (!hasCalledOnEndedRef.current) {
       hasCalledOnEndedRef.current = true;
       onVideoEnded();
     }
+    if (playIntervalRef.current) {
+      clearInterval(playIntervalRef.current);
+      playIntervalRef.current = null;
+    }
   };
 
-  // Also mark as watched if user has watched significant portion
+  const handlePlay = () => {
+    if (playIntervalRef.current) return;
+    playIntervalRef.current = setInterval(() => {
+      setTimeSpentSeconds((s) => s + 1);
+    }, 1000);
+  };
+
+  const handlePause = () => {
+    if (playIntervalRef.current) {
+      clearInterval(playIntervalRef.current);
+      playIntervalRef.current = null;
+    }
+  };
+
+  // Also mark step complete if user has watched 90% (allow proceeding)
   const handleTimeUpdate = () => {
     if (videoRef.current && !hasCalledOnEndedRef.current) {
       const currentTime = videoRef.current.currentTime;
       const duration = videoRef.current.duration;
-      // If user has watched at least 90% of the video, allow proceeding
       if (duration > 0 && currentTime / duration >= 0.9) {
         hasCalledOnEndedRef.current = true;
         onVideoEnded();
@@ -75,9 +122,12 @@ export default function VideoStep({
             ref={videoRef}
             src={videoPath}
             controls
+            loop
             className="max-w-full max-h-[70vh] w-auto h-auto"
             onEnded={handleVideoEnded}
             onTimeUpdate={handleTimeUpdate}
+            onPlay={handlePlay}
+            onPause={handlePause}
             onError={handleVideoError}
             preload="metadata"
           >

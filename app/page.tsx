@@ -3,34 +3,9 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex flex-col items-center justify-between gap-8 sm:items-start">
-          {/* UiB Logo - dark logo in light mode, light logo in dark mode */}
-          <div className="w-full flex justify-center sm:justify-start">
-            <img
-              src="/uib-logo-dark.png"
-              alt="University of Bergen Logo"
-              className="block dark:hidden"
-              style={{ 
-                height: '80px', 
-                width: 'auto',
-                maxWidth: '250px',
-                objectFit: 'contain'
-              }}
-            />
-            <img
-              src="/uib-logo.png"
-              alt="University of Bergen Logo"
-              className="hidden dark:block"
-              style={{ 
-                height: '80px', 
-                width: 'auto',
-                maxWidth: '250px',
-                objectFit: 'contain'
-              }}
-            />
-          </div>
           <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left w-full">
             <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-              Do Hypnotic Videos Reduce Memory Recall?
+              Hypnotic Videos and Memory Recall
             </h1>
             <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
               This research examines whether background media content, specifically "brainrot" or "hypnotic" style videos,affects your ability to recall story details. You'll watch a short video telling a story, and then answer questions about what you remember.

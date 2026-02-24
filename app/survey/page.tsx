@@ -22,6 +22,8 @@ interface SurveyData {
   };
   video: {
     filename: string;
+    timeSpentSeconds?: number;
+    watchCount?: number;
   };
   freeRecall: {
     everythingRemembered: string;
@@ -107,9 +109,11 @@ export default function Page() {
         const videos = data.videos;
         
         if (videos && videos.length > 0) {
-          // Randomly select a video
+          // Randomly select a video and set it in survey data (condition is fixed from the start)
           const randomIndex = Math.floor(Math.random() * videos.length);
-          setSelectedVideo(videos[randomIndex]);
+          const chosen = videos[randomIndex];
+          setSelectedVideo(chosen);
+          updateSurveyData("video", "filename", chosen);
         } else {
           console.error('No videos found in the videos folder');
         }
@@ -135,6 +139,8 @@ export default function Page() {
     },
     video: {
       filename: "",
+      timeSpentSeconds: 0,
+      watchCount: 0,
     },
     freeRecall: {
       everythingRemembered: "",
@@ -202,8 +208,8 @@ export default function Page() {
           surveyData.demographics.socialMediaFrequency !== "" &&
           surveyData.demographics.gameplayFamiliarity !== ""
         );
-      case 1: // Video
-        return videoWatched;
+      case 1: // Video — step is skippable; time/watchCount still recorded if they play
+        return true;
       case 2: // Free Recall
         return (
           surveyData.freeRecall.everythingRemembered.trim() !== ""
@@ -296,6 +302,8 @@ export default function Page() {
         },
         video: {
           filename: surveyData.video.filename,
+          timeSpentSeconds: surveyData.video.timeSpentSeconds ?? 0,
+          watchCount: surveyData.video.watchCount ?? 0,
         },
         freeRecall: {
           everythingRemembered: surveyData.freeRecall.everythingRemembered,
@@ -361,8 +369,6 @@ export default function Page() {
 
   const handleVideoEnded = () => {
     setVideoWatched(true);
-    // Store the video filename in survey data
-    updateSurveyData("video", "filename", selectedVideo);
   };
 
   const renderStep = () => {
@@ -391,6 +397,14 @@ export default function Page() {
             videoPath={`/videos/${selectedVideo}`}
             videoFilename={selectedVideo}
             onVideoEnded={handleVideoEnded}
+            initialTimeSpentSeconds={surveyData.video.timeSpentSeconds ?? 0}
+            initialWatchCount={surveyData.video.watchCount ?? 0}
+            onVideoProgress={({ timeSpentSeconds: t, watchCount: w }) =>
+              setSurveyData((prev) => ({
+                ...prev,
+                video: { ...prev.video, timeSpentSeconds: t, watchCount: w },
+              }))
+            }
           />
         );
       case 2:

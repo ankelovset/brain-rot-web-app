@@ -159,6 +159,8 @@ export async function POST(request: NextRequest) {
       },
       video: {
         filename: video.filename,
+        timeSpentSeconds: video.timeSpentSeconds ?? 0,
+        watchCount: video.watchCount ?? 0,
       },
       freeRecall: {
         everythingRemembered: freeRecall.everythingRemembered,
