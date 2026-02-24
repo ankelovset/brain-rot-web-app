@@ -59,11 +59,13 @@ export default function LikertScale({
           <span>Strongly Disagree</span>
           <span>Strongly Agree</span>
         </div>
-        {value && (
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 text-center mt-1">
-            Selected: {scaleLabels[value as keyof typeof scaleLabels]}
-          </p>
-        )}
+        <p className="text-xs text-zinc-600 dark:text-zinc-400 text-center mt-1 min-h-[1.25rem]">
+          {value ? (
+            <>Selected: {scaleLabels[value as keyof typeof scaleLabels]}</>
+          ) : (
+            <span className="invisible" aria-hidden="true">Selected:</span>
+          )}
+        </p>
       </div>
     </div>
   );

@@ -97,33 +97,23 @@ export default function Page() {
   // Capture start time and load available videos when component mounts
   useEffect(() => {
     setStartedAt(new Date());
-    
-    // Fetch available videos from API
     const loadVideos = async () => {
       try {
-        const response = await fetch('/api/videos');
-        if (!response.ok) {
-          throw new Error('Failed to load videos');
-        }
+        const response = await fetch("/api/videos");
+        if (!response.ok) throw new Error("Failed to load videos");
         const data = await response.json();
         const videos = data.videos;
-        
-        if (videos && videos.length > 0) {
-          // Randomly select a video and set it in survey data (condition is fixed from the start)
-          const randomIndex = Math.floor(Math.random() * videos.length);
-          const chosen = videos[randomIndex];
+        if (videos?.length > 0) {
+          const chosen = videos[Math.floor(Math.random() * videos.length)];
           setSelectedVideo(chosen);
           updateSurveyData("video", "filename", chosen);
-        } else {
-          console.error('No videos found in the videos folder');
         }
       } catch (error) {
-        console.error('Error loading videos:', error);
+        console.error("Error loading videos:", error);
       } finally {
         setIsLoadingVideo(false);
       }
     };
-    
     loadVideos();
   }, []);
 
@@ -195,6 +185,17 @@ export default function Page() {
       },
     }));
   };
+
+  // Warn before closing tab / leaving when survey is not submitted
+  useEffect(() => {
+    if (submitStatus === "success") return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [submitStatus]);
 
   const validateStep = (step: number): boolean => {
     switch (step) {
