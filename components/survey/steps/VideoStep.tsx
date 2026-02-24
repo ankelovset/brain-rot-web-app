@@ -70,7 +70,7 @@ export default function VideoStep({
         <h3 className="text-lg font-semibold text-black dark:text-zinc-50 text-center">
           Please watch the following video
         </h3>
-        <div className="w-full max-w-md bg-black rounded-lg overflow-hidden flex items-center justify-center">
+        <div className="w-full max-w-md rounded-lg overflow-hidden flex items-center justify-center">
           <video
             ref={videoRef}
             src={videoPath}

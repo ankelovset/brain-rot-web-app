@@ -5,7 +5,9 @@ if (!process.env.MONGODB_URI) {
 }
 
 const uri: string = process.env.MONGODB_URI;
-const options = {};
+const options: { tls?: boolean; serverSelectionTimeoutMS?: number } = {
+  serverSelectionTimeoutMS: 10000,
+};
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
