@@ -25,7 +25,6 @@ interface SurveyData {
   };
   freeRecall: {
     everythingRemembered: string;
-    specificDetails: string[];
   };
   multipleChoice: {
     storyAbout: string;
@@ -62,6 +61,9 @@ interface SurveyData {
     attentionPaid: number | null;
     watchedEntireVideo: string;
     wasMultitasking: string;
+    narrationFocus: number | null;
+    distractionFocus: number | null;
+    backgroundVisuals: number | null;
   };
 }
 
@@ -76,6 +78,19 @@ export default function Page() {
   const [selectedVideo, setSelectedVideo] = useState<string>("");
   const [videoWatched, setVideoWatched] = useState(false);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
+
+  // Debug: skip steps from browser console (e.g. __surveyDebug.goToStep(3) or __surveyDebug.next())
+  useEffect(() => {
+    (window as unknown as { __surveyDebug?: object }).__surveyDebug = {
+      goToStep: (n: number) => setCurrentStep(Math.max(0, Math.min(n, TOTAL_STEPS - 1))),
+      next: () => setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1)),
+      markVideoWatched: () => setVideoWatched(true),
+      totalSteps: TOTAL_STEPS,
+    };
+    return () => {
+      delete (window as unknown as { __surveyDebug?: object }).__surveyDebug;
+    };
+  }, []);
 
   // Capture start time and load available videos when component mounts
   useEffect(() => {
@@ -123,7 +138,6 @@ export default function Page() {
     },
     freeRecall: {
       everythingRemembered: "",
-      specificDetails: ["", "", ""],
     },
     multipleChoice: {
       storyAbout: "",
@@ -160,6 +174,9 @@ export default function Page() {
       attentionPaid: null,
       watchedEntireVideo: "",
       wasMultitasking: "",
+      narrationFocus: null,
+      distractionFocus: null,
+      backgroundVisuals: null,
     },
   });
 
@@ -231,7 +248,10 @@ export default function Page() {
           surveyData.qualityControl.attentionCheck !== "" &&
           surveyData.qualityControl.attentionPaid !== null &&
           surveyData.qualityControl.watchedEntireVideo !== "" &&
-          surveyData.qualityControl.wasMultitasking !== ""
+          surveyData.qualityControl.narrationFocus !== null &&
+          surveyData.qualityControl.distractionFocus !== null &&
+          (selectedVideo === "01-no-video.mp4" ||
+            surveyData.qualityControl.backgroundVisuals !== null)
         );
       default:
         return false;
@@ -279,9 +299,6 @@ export default function Page() {
         },
         freeRecall: {
           everythingRemembered: surveyData.freeRecall.everythingRemembered,
-          specificDetails: surveyData.freeRecall.specificDetails.filter(
-            (detail) => detail.trim() !== ""
-          ),
         },
         multipleChoice: {
           storyAbout: surveyData.multipleChoice.storyAbout,
@@ -301,6 +318,9 @@ export default function Page() {
           attentionPaid: surveyData.qualityControl.attentionPaid,
           watchedEntireVideo: surveyData.qualityControl.watchedEntireVideo === "yes",
           wasMultitasking: surveyData.qualityControl.wasMultitasking === "yes",
+          narrationFocus: surveyData.qualityControl.narrationFocus,
+          distractionFocus: surveyData.qualityControl.distractionFocus,
+          backgroundVisuals: surveyData.qualityControl.backgroundVisuals,
         },
         startedAt: startedAt || new Date(),
         completedAt: completedAt,
@@ -507,6 +527,7 @@ export default function Page() {
             onChange={(field, value) =>
               updateSurveyData("qualityControl", field, value)
             }
+            shownVideoFilename={selectedVideo}
           />
         );
       default:

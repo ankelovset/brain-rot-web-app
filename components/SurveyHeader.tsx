@@ -9,16 +9,27 @@ interface SurveyHeaderProps {
 export default function SurveyHeader({ currentStep, totalSteps, stepTitle }: SurveyHeaderProps) {
   return (
     <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* UiB Logo */}
+      {/* UiB Logo - dark logo in light mode, light logo in dark mode */}
       <div className="w-full flex justify-center sm:justify-start mb-6">
         <img
-          src="/uib-logo.png"
+          src="/uib-logo-dark.png"
           alt="University of Bergen Logo"
+          className="block dark:hidden"
           style={{ 
             height: '80px', 
             width: 'auto',
             maxWidth: '250px',
-            display: 'block',
+            objectFit: 'contain'
+          }}
+        />
+        <img
+          src="/uib-logo.png"
+          alt="University of Bergen Logo"
+          className="hidden dark:block"
+          style={{ 
+            height: '80px', 
+            width: 'auto',
+            maxWidth: '250px',
             objectFit: 'contain'
           }}
         />

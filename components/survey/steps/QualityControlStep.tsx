@@ -8,17 +8,22 @@ interface QualityControlStepProps {
     attentionPaid: number | null;
     watchedEntireVideo: string;
     wasMultitasking: string;
+    narrationFocus: number | null;
+    distractionFocus: number | null;
+    backgroundVisuals: number | null;
   };
   onChange: (field: string, value: string | number) => void;
+  /** Video shown in this session (e.g. "01-no-video.mp4"). Used to show condition-specific questions. */
+  shownVideoFilename: string;
 }
 
 export default function QualityControlStep({
   data,
   onChange,
+  shownVideoFilename,
 }: QualityControlStepProps) {
   return (
     <div className="w-full max-w-md space-y-6">
-      <p>haha</p>
       <RadioGroup
         id="attentionCheck"
         label="To show you are paying attention, please select 'Option 3' for this statement."
@@ -59,7 +64,51 @@ export default function QualityControlStep({
         required
       />
 
-      <SelectInput
+      <ScaleInput
+        id="narrationFocus"
+        label="I found it difficult to focus on the narration.."
+        value={data.narrationFocus}
+        onChange={(value) => onChange("narrationFocus", value)}
+        min={1}
+        max={5}
+        labels={{
+          1: "Strongly disagree",
+          5: "Strongly agree",
+        }}
+        required
+      />
+
+      <ScaleInput
+        id="distractionFocus"
+        label="I felt distracted while watching the video."
+        value={data.distractionFocus}
+        onChange={(value) => onChange("distractionFocus", value)}
+        min={1}
+        max={5}
+        labels={{
+          1: "Strongly disagree",
+          5: "Strongly agree",
+        }}
+        required
+      />
+      
+      {shownVideoFilename !== "01-no-video.mp4" && (
+        <ScaleInput
+          id="backgroundVisuals"
+          label="The background visuals distracted me from the narration."
+          value={data.backgroundVisuals}
+          onChange={(value) => onChange("backgroundVisuals", value)}
+          min={1}
+          max={5}
+          labels={{
+            1: "Strongly disagree",
+            5: "Strongly agree",
+          }}
+          required
+        />
+      )}
+
+      {/*<SelectInput
         id="wasMultitasking"
         label="Were you multitasking while watching?"
         value={data.wasMultitasking}
@@ -69,7 +118,7 @@ export default function QualityControlStep({
           { value: "no", label: "No" },
         ]}
         required
-      />
+      />*/}
     </div>
   );
 }

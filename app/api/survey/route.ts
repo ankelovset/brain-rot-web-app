@@ -53,16 +53,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate free recall
-    // if (
-    //   !freeRecall.everythingRemembered ||
-    //   !Array.isArray(freeRecall.specificDetails) ||
-    //   freeRecall.specificDetails.length === 0
-    // ) {
-    //   return NextResponse.json(
-    //     { error: 'Missing required free recall fields' },
-    //     { status: 400 }
-    //   );
-    // }
+    if (!freeRecall.everythingRemembered?.trim()) {
+      return NextResponse.json(
+        { error: 'Missing required free recall fields' },
+        { status: 400 }
+      );
+    }
 
     // Validate multiple choice
     if (
@@ -129,12 +125,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate quality control
+    // Validate quality control (require backgroundVisuals only when that question was shown — i.e. when video has visuals, not 01-no-video)
+    const isNoVideoCondition = video?.filename === "01-no-video.mp4";
     if (
       !qualityControl.attentionCheck ||
       qualityControl.attentionPaid === null ||
       qualityControl.watchedEntireVideo === undefined ||
-      qualityControl.wasMultitasking === undefined
+      qualityControl.narrationFocus === null ||
+      qualityControl.distractionFocus === null ||
+      (!isNoVideoCondition && qualityControl.backgroundVisuals === null)
     ) {
       return NextResponse.json(
         { error: 'Missing required quality control fields' },
@@ -163,7 +162,6 @@ export async function POST(request: NextRequest) {
       },
       freeRecall: {
         everythingRemembered: freeRecall.everythingRemembered,
-        specificDetails: freeRecall.specificDetails,
       },
       multipleChoice: {
         storyAbout: multipleChoice.storyAbout,
@@ -200,6 +198,9 @@ export async function POST(request: NextRequest) {
         attentionPaid: qualityControl.attentionPaid,
         watchedEntireVideo: qualityControl.watchedEntireVideo,
         wasMultitasking: qualityControl.wasMultitasking,
+        narrationFocus: qualityControl.narrationFocus,
+        distractionFocus: qualityControl.distractionFocus,
+        backgroundVisuals: qualityControl.backgroundVisuals,
       },
       startedAt: startedAt ? new Date(startedAt) : new Date(),
       completedAt: completedAt ? new Date(completedAt) : new Date(),
