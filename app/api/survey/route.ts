@@ -68,7 +68,8 @@ export async function POST(request: NextRequest) {
       !multipleChoice.kioskPurchase ||
       !multipleChoice.lauraRoom ||
       !multipleChoice.meetingRescheduled ||
-      !multipleChoice.arrivalBeforeMeeting
+      !multipleChoice.arrivalBeforeMeeting ||
+      !multipleChoice.colleaguesArrived
     ) {
       return NextResponse.json(
         { error: 'Missing required multiple choice fields' },
@@ -173,6 +174,7 @@ export async function POST(request: NextRequest) {
         lauraRoom: multipleChoice.lauraRoom,
         meetingRescheduled: multipleChoice.meetingRescheduled,
         arrivalBeforeMeeting: multipleChoice.arrivalBeforeMeeting,
+        colleaguesArrived: multipleChoice.colleaguesArrived,
       },
       cognitiveLoad: {
         concentrateHard: cognitiveLoad.concentrateHard,

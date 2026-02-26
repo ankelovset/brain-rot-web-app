@@ -10,6 +10,7 @@ interface MultipleChoiceStepProps {
     lauraRoom: string;
     meetingRescheduled: string;
     arrivalBeforeMeeting: string;
+    colleaguesArrived: string;
   };
   onChange: (field: string, value: string) => void;
 }
@@ -22,13 +23,13 @@ export default function MultipleChoiceStep({
     <div className="w-full max-w-md space-y-6">
       <RadioGroup
         id="storyAbout"
-        label="Who is the story about?"
+        label="What is the main character's name?"
         value={data.storyAbout}
         onChange={(value) => onChange("storyAbout", value)}
         options={[
-          { value: "laura", label: "Laura" },
-          { value: "john", label: "John" },
           { value: "sarah", label: "Sarah" },
+          { value: "john", label: "John" },
+          { value: "laura", label: "Laura" },
           { value: "michael", label: "Michael" },
         ]}
         required
@@ -36,21 +37,21 @@ export default function MultipleChoiceStep({
 
       <RadioGroup
         id="arrivalTime"
-        label="When did the main character arrive at the university?"
+        label="At what time did the main character arrive at the university?"
         value={data.arrivalTime}
         onChange={(value) => onChange("arrivalTime", value)}
         options={[
-          { value: "morning", label: "Morning" },
-          { value: "afternoon", label: "Afternoon" },
-          { value: "evening", label: "Evening" },
-          { value: "night", label: "Night" },
+          { value: "08.47", label: "08:47" },
+          { value: "09.05", label: "09:05" },
+          { value: "09.30", label: "09:30" },
+          { value: "10.15", label: "10:15" },
         ]}
         required
       />
 
       <RadioGroup
         id="researchRoom"
-        label="What room was the research meeting in?"
+        label="What room was the meeting held in?"
         value={data.researchRoom}
         onChange={(value) => onChange("researchRoom", value)}
         options={[
@@ -64,12 +65,12 @@ export default function MultipleChoiceStep({
 
       <RadioGroup
         id="kioskPurchase"
-        label="What did she buy at the kiosk?"
+        label="What did the main character buy at the kiosk?"
         value={data.kioskPurchase}
         onChange={(value) => onChange("kioskPurchase", value)}
         options={[
+          { value: "coffee ", label: "Coffee" },
           { value: "water", label: "Water" },
-          { value: "coffee", label: "Coffee" },
           { value: "sandwich", label: "Sandwich" },
           { value: "chips", label: "Chips" },
         ]}
@@ -78,7 +79,7 @@ export default function MultipleChoiceStep({
 
       <RadioGroup
         id="lauraRoom"
-        label="Which room did Laura mistakenly go to?"
+        label="Which room did the main character mistakenly go to first?"
         value={data.lauraRoom}
         onChange={(value) => onChange("lauraRoom", value)}
         options={[
@@ -92,7 +93,7 @@ export default function MultipleChoiceStep({
 
       <RadioGroup
         id="meetingRescheduled"
-        label="When had the meeting been rescheduled to?"
+        label="At what time was the meeting scheduled to start?"
         value={data.meetingRescheduled}
         onChange={(value) => onChange("meetingRescheduled", value)}
         options={[
@@ -106,14 +107,28 @@ export default function MultipleChoiceStep({
 
       <RadioGroup
         id="arrivalBeforeMeeting"
-        label="How long before the meeting did Laura actually arrive?"
+        label="What extra topic was added to the meeting agenda?"
         value={data.arrivalBeforeMeeting}
         onChange={(value) => onChange("arrivalBeforeMeeting", value)}
         options={[
-          { value: "5-minutes", label: "5 minutes" },
-          { value: "10-minutes", label: "10 minutes" },
-          { value: "15-minutes", label: "15 minutes" },
-          { value: "20-minutes", label: "20 minutes" },
+          { value: "budget-planning-for-the-project", label: "Budget planning for the project" },
+          { value: "assignment-of-research-roles", label: "Assignment of research roles" },
+          { value: "data-collection-deadlines", label: "Data collection deadlines" },
+          { value: "scheduling-future-seminars", label: "Scheduling future seminars" },
+        ]}
+        required
+      />
+
+      <RadioGroup
+        id="colleaguesArrived"
+        label="How many colleagues had arrived when the main character entered the room?"
+        value={data.colleaguesArrived}
+        onChange={(value) => onChange("colleaguesArrived", value)}
+        options={[
+          { value: "1", label: "1" },
+          { value: "2", label: "2" },
+          { value: "3", label: "3" },
+          { value: "4", label: "4" },
         ]}
         required
       />

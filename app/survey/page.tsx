@@ -36,6 +36,7 @@ interface SurveyData {
     lauraRoom: string;
     meetingRescheduled: string;
     arrivalBeforeMeeting: string;
+    colleaguesArrived: string;
   };
   cognitiveLoad: {
     concentrateHard: number | null;
@@ -146,6 +147,7 @@ export default function Page() {
       lauraRoom: "",
       meetingRescheduled: "",
       arrivalBeforeMeeting: "",
+      colleaguesArrived: "",
     },
     cognitiveLoad: {
       concentrateHard: null,
@@ -224,7 +226,8 @@ export default function Page() {
           surveyData.multipleChoice.kioskPurchase !== "" &&
           surveyData.multipleChoice.lauraRoom !== "" &&
           surveyData.multipleChoice.meetingRescheduled !== "" &&
-          surveyData.multipleChoice.arrivalBeforeMeeting !== ""
+          surveyData.multipleChoice.arrivalBeforeMeeting !== "" &&
+          surveyData.multipleChoice.colleaguesArrived !== ""
         );
       case 4: // Cognitive Load
         return (
@@ -318,6 +321,7 @@ export default function Page() {
           lauraRoom: surveyData.multipleChoice.lauraRoom,
           meetingRescheduled: surveyData.multipleChoice.meetingRescheduled,
           arrivalBeforeMeeting: surveyData.multipleChoice.arrivalBeforeMeeting,
+          colleaguesArrived: surveyData.multipleChoice.colleaguesArrived,
         },
         cognitiveLoad: surveyData.cognitiveLoad,
         distraction: surveyData.distraction,
