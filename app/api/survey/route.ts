@@ -78,7 +78,6 @@ export async function POST(request: NextRequest) {
 
     // Validate cognitive load
     if (
-      cognitiveLoad.mentalEffort === null ||
       cognitiveLoad.concentrateHard === null ||
       cognitiveLoad.mentallyDemanding === null ||
       cognitiveLoad.easyToFollow === null
@@ -89,11 +88,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate engagement
+    // Validate engagement (visualsEnjoyable required only when not no-video condition)
+    const isNoVideoCondition = video?.filename === "01-no-video.mp4";
     if (
       engagement.videoEngaging === null ||
       engagement.wouldKeepWatching === null ||
-      engagement.visualsEnjoyable === null
+      (!isNoVideoCondition && engagement.visualsEnjoyable === null)
     ) {
       return NextResponse.json(
         { error: 'Missing required engagement fields' },
@@ -102,10 +102,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate distraction (skip when no-background video — step not shown)
-    const isNoVideoCondition = video?.filename === "01-no-video.mp4";
     if (!isNoVideoCondition) {
       if (
-        distraction.visualsDistracted === null ||
         distraction.attentionSplit === null ||
         distraction.lookingAtBackground === null ||
         distraction.ableToIgnore === null
@@ -177,13 +175,11 @@ export async function POST(request: NextRequest) {
         arrivalBeforeMeeting: multipleChoice.arrivalBeforeMeeting,
       },
       cognitiveLoad: {
-        mentalEffort: cognitiveLoad.mentalEffort,
         concentrateHard: cognitiveLoad.concentrateHard,
         mentallyDemanding: cognitiveLoad.mentallyDemanding,
         easyToFollow: cognitiveLoad.easyToFollow,
       },
       distraction: {
-        visualsDistracted: distraction.visualsDistracted,
         attentionSplit: distraction.attentionSplit,
         lookingAtBackground: distraction.lookingAtBackground,
         ableToIgnore: distraction.ableToIgnore,

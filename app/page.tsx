@@ -8,7 +8,10 @@ export default function Home() {
               Hypnotic Videos and Memory Recall
             </h1>
             <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-              This research examines whether background media content, specifically "brainrot" or "hypnotic" style videos,affects your ability to recall story details. You'll watch a short video telling a story, and then answer questions about what you remember.
+              This research examines whether background media content, specifically "brainrot" or "hypnotic" style videos, affects your ability to recall story details. You'll watch a short video telling a story, and then answer questions about what you remember.
+            </p>
+            <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+              Participation is voluntary, and you may withdraw at any point. No personally identifiable or trackable information will be collected.
             </p>
           </div>
           <div className="flex flex-col gap-4 text-base font-medium sm:flex-row w-full sm:w-auto">

@@ -38,13 +38,11 @@ interface SurveyData {
     arrivalBeforeMeeting: string;
   };
   cognitiveLoad: {
-    mentalEffort: number | null;
     concentrateHard: number | null;
     mentallyDemanding: number | null;
     easyToFollow: number | null;
   };
   distraction: {
-    visualsDistracted: number | null;
     attentionSplit: number | null;
     lookingAtBackground: number | null;
     ableToIgnore: number | null;
@@ -150,13 +148,11 @@ export default function Page() {
       arrivalBeforeMeeting: "",
     },
     cognitiveLoad: {
-      mentalEffort: null,
       concentrateHard: null,
       mentallyDemanding: null,
       easyToFollow: null,
     },
     distraction: {
-      visualsDistracted: null,
       attentionSplit: null,
       lookingAtBackground: null,
       ableToIgnore: null,
@@ -232,7 +228,6 @@ export default function Page() {
         );
       case 4: // Cognitive Load
         return (
-          surveyData.cognitiveLoad.mentalEffort !== null &&
           surveyData.cognitiveLoad.concentrateHard !== null &&
           surveyData.cognitiveLoad.mentallyDemanding !== null &&
           surveyData.cognitiveLoad.easyToFollow !== null
@@ -240,7 +235,6 @@ export default function Page() {
       case 5: // Distraction (skipped for no-video condition)
         if (isNoVideoCondition) return true;
         return (
-          surveyData.distraction.visualsDistracted !== null &&
           surveyData.distraction.attentionSplit !== null &&
           surveyData.distraction.lookingAtBackground !== null &&
           surveyData.distraction.ableToIgnore !== null
@@ -249,7 +243,8 @@ export default function Page() {
         return (
           surveyData.engagement.videoEngaging !== null &&
           surveyData.engagement.wouldKeepWatching !== null &&
-          surveyData.engagement.visualsEnjoyable !== null
+          (isNoVideoCondition ||
+            surveyData.engagement.visualsEnjoyable !== null)
         );
       case 7: // Manipulation Check
         return (
@@ -449,11 +444,6 @@ export default function Page() {
             title="Perceived Cognitive Load"
             questions={[
               {
-                id: "mentalEffort",
-                statement:
-                  "It took a lot of mental effort to follow the story",
-              },
-              {
                 id: "concentrateHard",
                 statement:
                   "I had to concentrate hard to understand the story",
@@ -464,7 +454,7 @@ export default function Page() {
               },
               {
                 id: "easyToFollow",
-                statement: "I found it easy to follow the story",
+                statement: "Following the story required effort",
                 reverse: true,
               },
             ]}
@@ -480,24 +470,19 @@ export default function Page() {
             title="Distraction / Divided Attention"
             questions={[
               {
-                id: "visualsDistracted",
+                id: "attentionSplit",
                 statement:
                   "The background visuals distracted me from the story",
               },
               {
-                id: "attentionSplit",
+                id: "lookingAtBackground",
                 statement:
                   "My attention was split between the visuals and the narration",
               },
               {
-                id: "lookingAtBackground",
-                statement:
-                  "I found myself looking at the background more than listening",
-              },
-              {
                 id: "ableToIgnore",
                 statement:
-                  "I was able to ignore the background visuals",
+                  "I found myself looking at the background more than listening",
                 reverse: true,
               },
             ]}
@@ -520,10 +505,15 @@ export default function Page() {
                 id: "wouldKeepWatching",
                 statement: "I would keep watching a video like this",
               },
-              {
-                id: "visualsEnjoyable",
-                statement: "The visuals made the video more enjoyable",
-              },
+              ...(isNoVideoCondition
+                ? []
+                : [
+                    {
+                      id: "visualsEnjoyable" as const,
+                      statement:
+                        "The visuals made the video more enjoyable",
+                    },
+                  ]),
             ]}
             data={surveyData.engagement}
             onChange={(field, value) =>

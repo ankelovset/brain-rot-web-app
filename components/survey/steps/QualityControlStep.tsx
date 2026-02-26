@@ -66,7 +66,7 @@ export default function QualityControlStep({
 
       <ScaleInput
         id="narrationFocus"
-        label="I found it difficult to focus on the narration.."
+        label="I found it difficult to focus on the narration."
         value={data.narrationFocus}
         onChange={(value) => onChange("narrationFocus", value)}
         min={1}

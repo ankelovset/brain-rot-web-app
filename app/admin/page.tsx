@@ -144,7 +144,6 @@ export default function AdminDashboard() {
         education: {} as Record<string, number>,
       },
       cognitiveLoad: {
-        mentalEffort: { avg: 0, values: [] as number[] },
         concentrateHard: { avg: 0, values: [] as number[] },
         mentallyDemanding: { avg: 0, values: [] as number[] },
         easyToFollow: { avg: 0, values: [] as number[] },
