@@ -144,13 +144,12 @@ export default function AdminDashboard() {
         education: {} as Record<string, number>,
       },
       cognitiveLoad: {
-        concentrateHard: { avg: 0, values: [] as number[] },
         mentallyDemanding: { avg: 0, values: [] as number[] },
-        easyToFollow: { avg: 0, values: [] as number[] },
+        hardToFollow: { avg: 0, values: [] as number[] },
       },
       engagement: {
         videoEngaging: { avg: 0, values: [] as number[] },
-        wouldKeepWatching: { avg: 0, values: [] as number[] },
+        feedResponse: {} as Record<string, number>,
         visualsEnjoyable: { avg: 0, values: [] as number[] },
       },
       qualityControl: {
@@ -189,10 +188,13 @@ export default function AdminDashboard() {
 
       // Engagement
       if (survey.engagement) {
-        Object.keys(stats.engagement).forEach((key) => {
+        Object.keys(survey.engagement).forEach((key) => {
           const value = survey.engagement[key];
-          if (value !== null && value !== undefined) {
-            stats.engagement[key].values.push(value);
+          if (value === null || value === undefined) return;
+          if (key === "feedResponse") {
+            stats.engagement.feedResponse[value as string] = (stats.engagement.feedResponse[value as string] || 0) + 1;
+          } else if ("values" in stats.engagement[key]) {
+            (stats.engagement[key] as { values: unknown[] }).values.push(value);
           }
         });
       }
@@ -223,9 +225,9 @@ export default function AdminDashboard() {
     });
 
     Object.keys(stats.engagement).forEach((key) => {
-      const values = stats.engagement[key].values;
-      if (values.length > 0) {
-        stats.engagement[key].avg = values.reduce((a: number, b: number) => a + b, 0) / values.length;
+      const entry = stats.engagement[key];
+      if ("values" in entry && Array.isArray(entry.values) && entry.values.length > 0) {
+        entry.avg = (entry.values as number[]).reduce((a: number, b: number) => a + b, 0) / entry.values.length;
       }
     });
 
@@ -373,22 +375,45 @@ export default function AdminDashboard() {
 
             {/* Engagement */}
             <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold mb-4 text-black dark:text-zinc-50">Engagement (Average)</h3>
+              <h3 className="text-lg font-semibold mb-4 text-black dark:text-zinc-50">Engagement</h3>
               <div className="space-y-3">
-                {Object.entries(stats.engagement).map(([key, data]: [string, any]) => (
-                  <div key={key}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-zinc-700 dark:text-zinc-300 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                      <span className="text-zinc-600 dark:text-zinc-400">{data.avg.toFixed(2)}</span>
+                {Object.entries(stats.engagement).map(([key, data]: [string, any]) => {
+                  if (key === "feedResponse") {
+                    const labels: Record<string, string> = {
+                      "scroll-past": "Scroll past",
+                      "continue-watching": "Continue watching",
+                      "look-for-similar": "Look for similar videos",
+                    };
+                    return (
+                      <div key={key}>
+                        <p className="text-sm font-medium text-black dark:text-zinc-50 mb-2">Feed response</p>
+                        <div className="space-y-2">
+                          {Object.entries(data).map(([opt, count]) => (
+                            <div key={opt} className="flex justify-between text-sm">
+                              <span className="text-zinc-700 dark:text-zinc-300">{labels[opt] ?? opt}</span>
+                              <span className="text-zinc-600 dark:text-zinc-400">{count as number}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+                  if (typeof data?.avg !== "number") return null;
+                  return (
+                    <div key={key}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-zinc-700 dark:text-zinc-300 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                        <span className="text-zinc-600 dark:text-zinc-400">{data.avg.toFixed(2)}</span>
+                      </div>
+                      <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
+                        <div
+                          className="bg-green-500 h-2 rounded-full"
+                          style={{ width: `${(data.avg / 7) * 100}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
-                      <div
-                        className="bg-green-500 h-2 rounded-full"
-                        style={{ width: `${(data.avg / 7) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

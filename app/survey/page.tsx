@@ -6,6 +6,8 @@ import DemographicsStep from "@/components/survey/steps/DemographicsStep";
 import VideoStep from "@/components/survey/steps/VideoStep";
 import FreeRecallStep from "@/components/survey/steps/FreeRecallStep";
 import MultipleChoiceStep from "@/components/survey/steps/MultipleChoiceStep";
+import DistractionStep from "@/components/survey/steps/DistractionStep";
+import EngagementStep from "@/components/survey/steps/EngagementStep";
 import LikertStep from "@/components/survey/steps/LikertStep";
 import QualityControlStep from "@/components/survey/steps/QualityControlStep";
 import SurveyHeader from "@/components/SurveyHeader";
@@ -39,18 +41,17 @@ interface SurveyData {
     colleaguesArrived: string;
   };
   cognitiveLoad: {
-    concentrateHard: number | null;
     mentallyDemanding: number | null;
-    easyToFollow: number | null;
+    hardToFollow: number | null;
   };
   distraction: {
-    attentionSplit: number | null;
     lookingAtBackground: number | null;
-    ableToIgnore: number | null;
+    visualsDistracting: number | null;
+    experienceOfBackgroundVisuals: number | null;
   };
   engagement: {
     videoEngaging: number | null;
-    wouldKeepWatching: number | null;
+    feedResponse: string;
     visualsEnjoyable: number | null;
   };
   manipulationCheck: {
@@ -61,6 +62,7 @@ interface SurveyData {
     attentionCheck: string;
     attentionPaid: number | null;
     watchedEntireVideo: string;
+    comments: string;
     wasMultitasking: string;
     narrationFocus: number | null;
     distractionFocus: number | null;
@@ -150,18 +152,17 @@ export default function Page() {
       colleaguesArrived: "",
     },
     cognitiveLoad: {
-      concentrateHard: null,
       mentallyDemanding: null,
-      easyToFollow: null,
+      hardToFollow: null,
     },
     distraction: {
-      attentionSplit: null,
       lookingAtBackground: null,
-      ableToIgnore: null,
+      visualsDistracting: null,
+      experienceOfBackgroundVisuals: null,
     },
     engagement: {
       videoEngaging: null,
-      wouldKeepWatching: null,
+      feedResponse: "",
       visualsEnjoyable: null,
     },
     manipulationCheck: {
@@ -172,6 +173,7 @@ export default function Page() {
       attentionCheck: "",
       attentionPaid: null,
       watchedEntireVideo: "",
+      comments: "",
       wasMultitasking: "",
       narrationFocus: null,
       distractionFocus: null,
@@ -231,21 +233,21 @@ export default function Page() {
         );
       case 4: // Cognitive Load
         return (
-          surveyData.cognitiveLoad.concentrateHard !== null &&
           surveyData.cognitiveLoad.mentallyDemanding !== null &&
-          surveyData.cognitiveLoad.easyToFollow !== null
+          surveyData.cognitiveLoad.hardToFollow !== null
         );
       case 5: // Distraction (skipped for no-video condition)
         if (isNoVideoCondition) return true;
-        return (
-          surveyData.distraction.attentionSplit !== null &&
-          surveyData.distraction.lookingAtBackground !== null &&
-          surveyData.distraction.ableToIgnore !== null
-        );
+        const d = surveyData.distraction;
+        if (d.lookingAtBackground === null || d.visualsDistracting === null)
+          return false;
+        if (d.visualsDistracting >= 4 && d.experienceOfBackgroundVisuals === null)
+          return false;
+        return true;
       case 6: // Engagement
         return (
           surveyData.engagement.videoEngaging !== null &&
-          surveyData.engagement.wouldKeepWatching !== null &&
+          surveyData.engagement.feedResponse !== "" &&
           (isNoVideoCondition ||
             surveyData.engagement.visualsEnjoyable !== null)
         );
@@ -258,11 +260,7 @@ export default function Page() {
         return (
           surveyData.qualityControl.attentionCheck !== "" &&
           surveyData.qualityControl.attentionPaid !== null &&
-          surveyData.qualityControl.watchedEntireVideo !== "" &&
-          surveyData.qualityControl.narrationFocus !== null &&
-          surveyData.qualityControl.distractionFocus !== null &&
-          (selectedVideo === "01-no-video.mp4" ||
-            surveyData.qualityControl.backgroundVisuals !== null)
+          surveyData.qualityControl.watchedEntireVideo !== ""
         );
       default:
         return false;
@@ -331,6 +329,7 @@ export default function Page() {
           attentionCheck: surveyData.qualityControl.attentionCheck,
           attentionPaid: surveyData.qualityControl.attentionPaid,
           watchedEntireVideo: surveyData.qualityControl.watchedEntireVideo === "yes",
+          comments: surveyData.qualityControl.comments ?? "",
           wasMultitasking: surveyData.qualityControl.wasMultitasking === "yes",
           narrationFocus: surveyData.qualityControl.narrationFocus,
           distractionFocus: surveyData.qualityControl.distractionFocus,
@@ -448,18 +447,19 @@ export default function Page() {
             title="Perceived Cognitive Load"
             questions={[
               {
-                id: "concentrateHard",
-                statement:
-                  "I had to concentrate hard to understand the story",
-              },
-              {
                 id: "mentallyDemanding",
                 statement: "The video felt mentally demanding",
               },
               {
-                id: "easyToFollow",
-                statement: "Following the story required effort",
-                reverse: true,
+                id: "hardToFollow",
+                statement: "How hard it was to follow the story?",
+                customLabels: {
+                  1: "Very easy",
+                  2: "Somewhat easy",
+                  3: "Neither easy nor difficult",
+                  4: "Somewhat difficult",
+                  5: "Very difficult",
+                },
               },
             ]}
             data={surveyData.cognitiveLoad}
@@ -470,26 +470,7 @@ export default function Page() {
         );
       case 5:
         return (
-          <LikertStep
-            title="Distraction / Divided Attention"
-            questions={[
-              {
-                id: "attentionSplit",
-                statement:
-                  "The background visuals distracted me from the story",
-              },
-              {
-                id: "lookingAtBackground",
-                statement:
-                  "My attention was split between the visuals and the narration",
-              },
-              {
-                id: "ableToIgnore",
-                statement:
-                  "I found myself looking at the background more than listening",
-                reverse: true,
-              },
-            ]}
+          <DistractionStep
             data={surveyData.distraction}
             onChange={(field, value) =>
               updateSurveyData("distraction", field, value)
@@ -498,31 +479,12 @@ export default function Page() {
         );
       case 6:
         return (
-          <LikertStep
-            title="Engagement"
-            questions={[
-              {
-                id: "videoEngaging",
-                statement: "The video was engaging",
-              },
-              {
-                id: "wouldKeepWatching",
-                statement: "I would keep watching a video like this",
-              },
-              ...(isNoVideoCondition
-                ? []
-                : [
-                    {
-                      id: "visualsEnjoyable" as const,
-                      statement:
-                        "The visuals made the video more enjoyable",
-                    },
-                  ]),
-            ]}
+          <EngagementStep
             data={surveyData.engagement}
             onChange={(field, value) =>
               updateSurveyData("engagement", field, value)
             }
+            hideVisualsEnjoyable={isNoVideoCondition}
           />
         );
       case 7:

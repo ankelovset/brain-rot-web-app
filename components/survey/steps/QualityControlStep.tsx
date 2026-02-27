@@ -1,12 +1,14 @@
 import RadioGroup from "../RadioGroup";
 import ScaleInput from "../ScaleInput";
 import SelectInput from "../SelectInput";
+import TextareaInput from "../TextareaInput";
 
 interface QualityControlStepProps {
   data: {
     attentionCheck: string;
     attentionPaid: number | null;
     watchedEntireVideo: string;
+    comments: string;
     wasMultitasking: string;
     narrationFocus: number | null;
     distractionFocus: number | null;
@@ -64,7 +66,16 @@ export default function QualityControlStep({
         required
       />
 
-      <ScaleInput
+      <TextareaInput
+        id="comments"
+        label="If the video wasn't engaging, what would you change? Du you usually watch these types of videos? Do you have any other comments? (Optional)"
+        value={data.comments}
+        onChange={(value) => onChange("comments", value)}
+        placeholder="Comments, feedback, or notes..."
+        rows={4}
+      />
+
+      {/* <ScaleInput
         id="narrationFocus"
         label="I found it difficult to focus on the narration."
         value={data.narrationFocus}
@@ -76,9 +87,9 @@ export default function QualityControlStep({
           5: "Strongly agree",
         }}
         required
-      />
+      /> */}
 
-      <ScaleInput
+      {/* <ScaleInput
         id="distractionFocus"
         label="I felt distracted while watching the video."
         value={data.distractionFocus}
@@ -90,9 +101,9 @@ export default function QualityControlStep({
           5: "Strongly agree",
         }}
         required
-      />
-      
-      {shownVideoFilename !== "01-no-video.mp4" && (
+      /> */}
+
+      {/* {shownVideoFilename !== "01-no-video.mp4" && (
         <ScaleInput
           id="backgroundVisuals"
           label="The background visuals distracted me from the narration."
@@ -106,7 +117,7 @@ export default function QualityControlStep({
           }}
           required
         />
-      )}
+      )} */}
 
       {/*<SelectInput
         id="wasMultitasking"

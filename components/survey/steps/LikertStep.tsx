@@ -4,6 +4,8 @@ interface LikertQuestion {
   id: string;
   statement: string;
   reverse?: boolean;
+  /** Optional custom scale labels (e.g. { 1: "Very easy", 5: "Very difficult" }). */
+  customLabels?: { [key: number]: string };
 }
 
 interface LikertStepProps {
@@ -29,10 +31,11 @@ export default function LikertStep({
           key={question.id}
           id={question.id}
           statement={question.statement}
-          value={data[question.id] || null}
+          value={data[question.id] ?? null}
           onChange={(value) => onChange(question.id, value)}
           required
           reverse={question.reverse}
+          customLabels={question.customLabels}
         />
       ))}
     </div>

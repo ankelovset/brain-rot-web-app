@@ -79,9 +79,8 @@ export async function POST(request: NextRequest) {
 
     // Validate cognitive load
     if (
-      cognitiveLoad.concentrateHard === null ||
       cognitiveLoad.mentallyDemanding === null ||
-      cognitiveLoad.easyToFollow === null
+      cognitiveLoad.hardToFollow === null
     ) {
       return NextResponse.json(
         { error: 'Missing required cognitive load fields' },
@@ -93,7 +92,7 @@ export async function POST(request: NextRequest) {
     const isNoVideoCondition = video?.filename === "01-no-video.mp4";
     if (
       engagement.videoEngaging === null ||
-      engagement.wouldKeepWatching === null ||
+      !engagement.feedResponse ||
       (!isNoVideoCondition && engagement.visualsEnjoyable === null)
     ) {
       return NextResponse.json(
@@ -105,12 +104,20 @@ export async function POST(request: NextRequest) {
     // Validate distraction (skip when no-background video — step not shown)
     if (!isNoVideoCondition) {
       if (
-        distraction.attentionSplit === null ||
         distraction.lookingAtBackground === null ||
-        distraction.ableToIgnore === null
+        distraction.visualsDistracting === null
       ) {
         return NextResponse.json(
           { error: 'Missing required distraction fields' },
+          { status: 400 }
+        );
+      }
+      if (
+        distraction.visualsDistracting >= 4 &&
+        distraction.experienceOfBackgroundVisuals === null
+      ) {
+        return NextResponse.json(
+          { error: 'Missing required distraction follow-up (experience of background visuals)' },
           { status: 400 }
         );
       }
@@ -127,14 +134,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate quality control (require backgroundVisuals only when that question was shown — i.e. when video has visuals, not 01-no-video)
+    // Validate quality control
     if (
       !qualityControl.attentionCheck ||
       qualityControl.attentionPaid === null ||
-      qualityControl.watchedEntireVideo === undefined ||
-      qualityControl.narrationFocus === null ||
-      qualityControl.distractionFocus === null ||
-      (!isNoVideoCondition && qualityControl.backgroundVisuals === null)
+      qualityControl.watchedEntireVideo === undefined
     ) {
       return NextResponse.json(
         { error: 'Missing required quality control fields' },
@@ -177,18 +181,17 @@ export async function POST(request: NextRequest) {
         colleaguesArrived: multipleChoice.colleaguesArrived,
       },
       cognitiveLoad: {
-        concentrateHard: cognitiveLoad.concentrateHard,
         mentallyDemanding: cognitiveLoad.mentallyDemanding,
-        easyToFollow: cognitiveLoad.easyToFollow,
+        hardToFollow: cognitiveLoad.hardToFollow,
       },
       distraction: {
-        attentionSplit: distraction.attentionSplit,
         lookingAtBackground: distraction.lookingAtBackground,
-        ableToIgnore: distraction.ableToIgnore,
+        visualsDistracting: distraction.visualsDistracting,
+        experienceOfBackgroundVisuals: distraction.experienceOfBackgroundVisuals,
       },
       engagement: {
         videoEngaging: engagement.videoEngaging,
-        wouldKeepWatching: engagement.wouldKeepWatching,
+        feedResponse: engagement.feedResponse,
         visualsEnjoyable: engagement.visualsEnjoyable,
       },
       manipulationCheck: {
@@ -199,6 +202,7 @@ export async function POST(request: NextRequest) {
         attentionCheck: qualityControl.attentionCheck,
         attentionPaid: qualityControl.attentionPaid,
         watchedEntireVideo: qualityControl.watchedEntireVideo,
+        comments: qualityControl.comments ?? "",
         wasMultitasking: qualityControl.wasMultitasking,
         narrationFocus: qualityControl.narrationFocus,
         distractionFocus: qualityControl.distractionFocus,

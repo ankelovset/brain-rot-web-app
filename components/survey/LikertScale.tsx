@@ -5,9 +5,11 @@ interface LikertScaleProps {
   onChange: (value: number) => void;
   required?: boolean;
   reverse?: boolean; // For reverse-scored items
+  /** Optional custom scale labels (e.g. { 1: "Very easy", 5: "Very difficult" }). Determines scale length and endpoint labels. */
+  customLabels?: { [key: number]: string };
 }
 
-const scaleLabels = {
+const defaultScaleLabels: { [key: number]: string } = {
   1: "Strongly Disagree",
   2: "Disagree",
   3: "Somewhat Disagree",
@@ -24,8 +26,14 @@ export default function LikertScale({
   onChange,
   required = false,
   reverse = false,
+  customLabels,
 }: LikertScaleProps) {
-  const scale = [1, 2, 3, 4, 5, 6, 7];
+  const scaleLabels = customLabels ?? defaultScaleLabels;
+  const scale = Object.keys(scaleLabels)
+    .map(Number)
+    .sort((a, b) => a - b);
+  const leftLabel = scaleLabels[scale[0]];
+  const rightLabel = scaleLabels[scale[scale.length - 1]];
 
   return (
     <div className="flex flex-col gap-3">
@@ -34,7 +42,10 @@ export default function LikertScale({
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-7 gap-2">
+        <div
+          className="grid gap-2"
+          style={{ gridTemplateColumns: `repeat(${scale.length}, minmax(0, 1fr))` }}
+        >
           {scale.map((num) => (
             <label
               key={num}
@@ -56,12 +67,12 @@ export default function LikertScale({
           ))}
         </div>
         <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
-          <span>Strongly Disagree</span>
-          <span>Strongly Agree</span>
+          <span>{leftLabel}</span>
+          <span>{rightLabel}</span>
         </div>
         <p className="text-xs text-zinc-600 dark:text-zinc-400 text-center mt-1 min-h-[1.25rem]">
-          {value ? (
-            <>Selected: {scaleLabels[value as keyof typeof scaleLabels]}</>
+          {value != null && value in scaleLabels ? (
+            <>Selected: {scaleLabels[value]}</>
           ) : (
             <span className="invisible" aria-hidden="true">Selected:</span>
           )}
