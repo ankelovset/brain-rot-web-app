@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       }
       if (
         distraction.visualsDistracting >= 4 &&
-        distraction.experienceOfBackgroundVisuals === null
+        !distraction.experienceOfBackgroundVisuals
       ) {
         return NextResponse.json(
           { error: 'Missing required distraction follow-up (experience of background visuals)' },
@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
       distraction: {
         lookingAtBackground: distraction.lookingAtBackground,
         visualsDistracting: distraction.visualsDistracting,
-        experienceOfBackgroundVisuals: distraction.experienceOfBackgroundVisuals,
+        experienceOfBackgroundVisuals: distraction.experienceOfBackgroundVisuals ?? "",
       },
       engagement: {
         videoEngaging: engagement.videoEngaging,

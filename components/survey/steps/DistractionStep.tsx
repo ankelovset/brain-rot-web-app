@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import LikertScale from "../LikertScale";
+import RadioGroup from "../RadioGroup";
 
 const VISUALS_DISTRACTING_LABELS: { [key: number]: string } = {
   1: "Not distracting",
@@ -13,21 +14,18 @@ const VISUALS_DISTRACTING_LABELS: { [key: number]: string } = {
   7: "Extremely distracting",
 };
 
-const EXPERIENCE_OF_VISUALS_LABELS: { [key: number]: string } = {
-  1: "Very distracting",
-  2: "Somewhat distracting",
-  3: "Slightly distracting",
-  4: "Neutral",
-  5: "Slightly helpful for focus",
-  6: "Somewhat helpful for focus",
-  7: "Very helpful for focus",
-};
+const EXPERIENCE_OF_VISUALS_OPTIONS = [
+  { value: "mostly-ignored", label: "I mostly ignored them" },
+  { value: "noticed-but-focused", label: "I noticed them but could focus on the narration" },
+  { value: "competed-with-narration", label: "They competed with the narration for my attention" },
+  { value: "took-most-attention", label: "They took most of my attention" },
+];
 
 interface DistractionStepProps {
   data: {
     lookingAtBackground: number | null;
     visualsDistracting: number | null;
-    experienceOfBackgroundVisuals: number | null;
+    experienceOfBackgroundVisuals: string;
   };
   onChange: (field: string, value: string | number | null) => void;
 }
@@ -37,8 +35,8 @@ export default function DistractionStep({ data, onChange }: DistractionStepProps
 
   // Clear experience answer when rating drops below 4
   useEffect(() => {
-    if (!showExperienceQuestion && data.experienceOfBackgroundVisuals !== null) {
-      onChange("experienceOfBackgroundVisuals", null);
+    if (!showExperienceQuestion && data.experienceOfBackgroundVisuals !== "") {
+      onChange("experienceOfBackgroundVisuals", "");
     }
   }, [showExperienceQuestion, data.experienceOfBackgroundVisuals, onChange]);
 
@@ -66,13 +64,13 @@ export default function DistractionStep({ data, onChange }: DistractionStepProps
       />
 
       {showExperienceQuestion && (
-        <LikertScale
+        <RadioGroup
           id="experienceOfBackgroundVisuals"
-          statement="How did you experience the background visuals?"
+          label="What best describes your experience of the visuals?"
           value={data.experienceOfBackgroundVisuals}
           onChange={(value) => onChange("experienceOfBackgroundVisuals", value)}
+          options={EXPERIENCE_OF_VISUALS_OPTIONS}
           required
-          customLabels={EXPERIENCE_OF_VISUALS_LABELS}
         />
       )}
     </div>

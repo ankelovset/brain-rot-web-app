@@ -47,7 +47,7 @@ interface SurveyData {
   distraction: {
     lookingAtBackground: number | null;
     visualsDistracting: number | null;
-    experienceOfBackgroundVisuals: number | null;
+    experienceOfBackgroundVisuals: string;
   };
   engagement: {
     videoEngaging: number | null;
@@ -158,7 +158,7 @@ export default function Page() {
     distraction: {
       lookingAtBackground: null,
       visualsDistracting: null,
-      experienceOfBackgroundVisuals: null,
+      experienceOfBackgroundVisuals: "",
     },
     engagement: {
       videoEngaging: null,
@@ -241,7 +241,7 @@ export default function Page() {
         const d = surveyData.distraction;
         if (d.lookingAtBackground === null || d.visualsDistracting === null)
           return false;
-        if (d.visualsDistracting >= 4 && d.experienceOfBackgroundVisuals === null)
+        if (d.visualsDistracting >= 4 && d.experienceOfBackgroundVisuals === "")
           return false;
         return true;
       case 6: // Engagement
