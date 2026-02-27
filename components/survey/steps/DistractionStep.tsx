@@ -29,7 +29,7 @@ interface DistractionStepProps {
     visualsDistracting: number | null;
     experienceOfBackgroundVisuals: number | null;
   };
-  onChange: (field: string, value: string | number) => void;
+  onChange: (field: string, value: string | number | null) => void;
 }
 
 export default function DistractionStep({ data, onChange }: DistractionStepProps) {
