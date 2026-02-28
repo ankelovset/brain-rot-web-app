@@ -83,8 +83,14 @@ export default function Page() {
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
 
   const isNoVideoCondition = selectedVideo === "01-no-video.mp4";
-  const totalSteps = isNoVideoCondition ? 8 : TOTAL_STEPS;
-  const contentStep = isNoVideoCondition && currentStep >= 5 ? currentStep + 1 : currentStep;
+  const totalSteps = isNoVideoCondition ? 7 : TOTAL_STEPS;
+  const contentStep = isNoVideoCondition
+    ? currentStep <= 4
+      ? currentStep
+      : currentStep === 5
+        ? 6
+        : 8
+    : currentStep;
 
   // Debug: skip steps from browser console (e.g. __surveyDebug.goToStep(3) or __surveyDebug.next())
   useEffect(() => {
@@ -251,7 +257,8 @@ export default function Page() {
           (isNoVideoCondition ||
             surveyData.engagement.visualsEnjoyable !== null)
         );
-      case 7: // Manipulation Check
+      case 7: // Manipulation Check (skipped for no-video condition)
+        if (isNoVideoCondition) return true;
         return (
           surveyData.manipulationCheck.fastPaced !== null &&
           surveyData.manipulationCheck.visuallyStimulating !== null
@@ -368,7 +375,6 @@ export default function Page() {
         "Multiple Choice",
         "Cognitive Load",
         "Engagement",
-        "Manipulation Check",
         "Quality Control",
       ]
     : [

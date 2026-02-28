@@ -123,15 +123,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Validate manipulation check
-    if (
-      manipulationCheck.fastPaced === null ||
-      manipulationCheck.visuallyStimulating === null
-    ) {
-      return NextResponse.json(
-        { error: 'Missing required manipulation check fields' },
-        { status: 400 }
-      );
+    // Validate manipulation check (skip when no-video — step not shown)
+    if (!isNoVideoCondition) {
+      if (
+        manipulationCheck.fastPaced === null ||
+        manipulationCheck.visuallyStimulating === null
+      ) {
+        return NextResponse.json(
+          { error: 'Missing required manipulation check fields' },
+          { status: 400 }
+        );
+      }
     }
 
     // Validate quality control
