@@ -6,6 +6,7 @@ const ADMIN_PASSWORD = 'brainrot123';
 const SESSION_TOKEN = 'admin_session_token_2024';
 
 export async function POST(request: NextRequest) {
+  
   try {
     const body = await request.json();
     const { username, password } = body;
